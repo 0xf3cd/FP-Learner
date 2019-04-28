@@ -73,7 +73,7 @@
 						(iter m (* p m))
 					)
 	))))     ; *
-    (iter n n)
+  (iter n n)
 ))
 
 (define (my-rev ls) (
@@ -127,3 +127,84 @@
 	do ((ls_ (string->list str) (cdr ls_)) (value 0 (+ (* 10 value) (int2char (car ls_)))))
 	((null? ls_) value)
 )))
+
+(define double (lambda (ls) (
+	map (lambda (x) (* 2 x)) ls
+)))
+
+(define (minus la lb) (
+	map - la lb
+))
+
+(define (filter-even ls) (
+	filter (lambda (x) (= 0 (mod x 2))) ls
+))
+
+(define (filter-10-100 ls) (
+	filter (lambda (x) (and (>= x 10) (<= x 100))) ls
+))
+
+(define (square-sum ls) (
+	reduce (lambda (x y) (+ y (* x x))) 0 ls
+))
+
+(define (sort-sin ls) (
+	sort ls (lambda (x y) (> (sin x) (sin y)))
+))
+
+(define (sort-length ls) (
+	sort ls (lambda (x y) (> (length x) (length y)))
+))
+
+(define (apply-square-sum ls) (
+	apply + (map (lambda (x) (* x x)) ls)
+))
+
+(define (member-if judge ls) (
+	cond
+	((null? ls) #f)
+	((judge (car ls)) ls)
+	(else (member-if judge (cdr ls)))
+))
+
+(define (has-member judge ls x) (
+	cond
+	((null? ls) #f)
+	((judge (car ls) x) ls)
+	(else (has-member judge (cdr ls) x))
+))
+
+;(keep-matching-items '(1 2 -3 -4 5) positive?)
+(define (match judge ls) (
+	if (null? ls)
+	'()
+	(if (judge (car ls))
+		(cons (car ls) (match judge (cdr ls)))
+		(match judge (cdr ls))
+	)
+))
+
+(define (my-map fun . lss)
+  (letrec ((iter (lambda (fun lss)
+               (if (null? lss)
+               '()
+               (cons (fun (car lss))
+                 (iter fun (cdr lss)))))
+					)
+       		(map-rec (lambda (fun lss)
+              (if (memq '() lss)
+              '()
+              (cons (apply fun (iter car lss))
+                (map-rec fun (iter cdr lss)))))
+					))
+  (map-rec fun lss))
+)
+
+(define (read-file file-name) (
+	let ((port (open-input-file file-name)))
+	(let loop((ls '()) (c (read-char port)))
+		(if (eof-object? c)
+		(begin 
+			(close-input-port port) 
+			(list->string (reverse ls)))
+		(loop (cons c ls) (read-char port))))))
